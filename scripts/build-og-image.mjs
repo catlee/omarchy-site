@@ -28,10 +28,9 @@ if (!locales[language])
 const themes = requestedTheme
   ? SITE_THEMES.filter((theme) => theme.id === requestedTheme)
   : SITE_THEMES
-const labelLocale =
-  requestedLocale || process.argv.includes('--site')
-    ? (locales[language].contentLocale ?? language)
-    : undefined
+const labelLocale = requestedLocale
+  ? (locales[language].contentLocale ?? language)
+  : undefined
 
 const W = 1200
 const H = 630

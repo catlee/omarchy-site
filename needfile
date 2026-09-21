@@ -1,8 +1,4 @@
-not_found_deps =
-  scripts/build-not-found-glyph.mjs
-  src/data/wordmark-bitmap.ts
-
-public/brand/not-found-wordmark.svg src/data/not-found-bitmap.ts: {{not_found_deps}}
+public/brand/not-found-wordmark.svg src/data/not-found-bitmap.ts: scripts/build-not-found-glyph.mjs src/data/wordmark-bitmap.ts
   node scripts/build-not-found-glyph.mjs
 
 social_deps =
