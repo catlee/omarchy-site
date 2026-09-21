@@ -14,5 +14,8 @@ social_deps =
   src/lib/site-themes.ts
   src/i18n/locales.json
 
-public/brand/social/%.png: {{social_deps}}
-  node scripts/build-og-image.mjs --theme {{stem}} --locale en
+# The static Catppuccin card anchors the group; the manifest records the rest.
+public/brand/social/catppuccin.png: {{social_deps}}
+  @outputs(.need/social-cards.outputs)
+  node scripts/build-og-image.mjs --locale en
+  find public/brand/social -maxdepth 1 -type f -name '*.png' ! -name catppuccin.png -printf '%p\n' | sort > .need/social-cards.outputs

@@ -1,4 +1,4 @@
-/** Build 1200x630 social cards from the site's CSS palettes. */
+/** Build 1200x630 social cards for every site theme from its CSS palettes. */
 import sharp from 'sharp'
 import locales from '../src/i18n/locales.json' with { type: 'json' }
 import { socialLabelMasks, colorSocialLabels } from './lib/social-labels.mjs'
@@ -17,17 +17,11 @@ const argument = (name) => {
   return index === -1 ? undefined : process.argv[index + 1]
 }
 
-const requestedTheme = argument('--theme')
 const requestedLocale = argument('--locale')
 const language = requestedLocale || process.env.PUBLIC_SITE_LOCALE || 'en'
-if (requestedTheme && !SITE_THEMES.some((theme) => theme.id === requestedTheme))
-  throw new Error(`Unknown social-card theme: ${requestedTheme}`)
 if (!locales[language])
   throw new Error(`Unknown social-card locale: ${language}`)
 
-const themes = requestedTheme
-  ? SITE_THEMES.filter((theme) => theme.id === requestedTheme)
-  : SITE_THEMES
 const labelLocale = requestedLocale
   ? (locales[language].contentLocale ?? language)
   : undefined
@@ -56,7 +50,7 @@ const GRID_ROWS = Math.ceil(H / CH)
 const WM_COL = Math.round((COLS - 81) / 2)
 const WM_ROW = 10
 
-for (const theme of themes) {
+for (const theme of SITE_THEMES) {
   const block = css.split(`[data-theme='${theme.id}'] {`)[1]?.split('}')[0]
   if (!block) throw new Error(`Missing CSS palette for ${theme.id}`)
   const color = (name) => {
