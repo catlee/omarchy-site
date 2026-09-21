@@ -1,4 +1,4 @@
-/** Build a 1200x630 social card for every site theme from its CSS palette. */
+/** Build 1200x630 social cards from the site's CSS palettes. */
 import sharp from 'sharp'
 import locales from '../src/i18n/locales.json' with { type: 'json' }
 import { socialLabelMasks, colorSocialLabels } from './lib/social-labels.mjs'
@@ -12,13 +12,31 @@ const outputDir = path.join(root, 'public/brand/social')
 fs.mkdirSync(outputDir, { recursive: true })
 const css = fs.readFileSync(path.join(root, 'src/styles.css'), 'utf8')
 
+const argument = (name) => {
+  const index = process.argv.indexOf(name)
+  return index === -1 ? undefined : process.argv[index + 1]
+}
+
+const requestedTheme = argument('--theme')
+const requestedLocale = argument('--locale')
+const language = requestedLocale || process.env.PUBLIC_SITE_LOCALE || 'en'
+if (requestedTheme && !SITE_THEMES.some((theme) => theme.id === requestedTheme))
+  throw new Error(`Unknown social-card theme: ${requestedTheme}`)
+if (!locales[language])
+  throw new Error(`Unknown social-card locale: ${language}`)
+
+const themes = requestedTheme
+  ? SITE_THEMES.filter((theme) => theme.id === requestedTheme)
+  : SITE_THEMES
+const labelLocale =
+  requestedLocale || process.argv.includes('--site')
+    ? (locales[language].contentLocale ?? language)
+    : undefined
+
 const W = 1200
 const H = 630
-const language = process.env.PUBLIC_SITE_LOCALE || 'en'
 const labelMasks = await socialLabelMasks(
-  process.argv.includes('--site')
-    ? [locales[language].contentLocale ?? language]
-    : undefined,
+  labelLocale ? [labelLocale] : undefined,
 )
 
 // The wordmark's own grid: 81 cells across, 19 down, each cell 51 wide by
@@ -39,7 +57,7 @@ const GRID_ROWS = Math.ceil(H / CH)
 const WM_COL = Math.round((COLS - 81) / 2)
 const WM_ROW = 10
 
-for (const theme of SITE_THEMES) {
+for (const theme of themes) {
   const block = css.split(`[data-theme='${theme.id}'] {`)[1]?.split('}')[0]
   if (!block) throw new Error(`Missing CSS palette for ${theme.id}`)
   const color = (name) => {
@@ -137,9 +155,8 @@ ${cells.join('')}
 ${wordmark.join('')}
 </svg>`
 
-  for (const [language, masks] of Object.entries(labelMasks)) {
-    const directory =
-      language === 'en' ? outputDir : path.join(outputDir, language)
+  for (const [locale, masks] of Object.entries(labelMasks)) {
+    const directory = locale === 'en' ? outputDir : path.join(outputDir, locale)
     fs.mkdirSync(directory, { recursive: true })
     const out = path.join(directory, `${theme.id}.png`)
     const overlays = await colorSocialLabels(masks, [

@@ -50,6 +50,14 @@ regenerate and commit the images. Bundled font subsets support all scripts;
 see [font maintenance](scripts/fonts/social/README.md) when adding characters.
 Social platforms may retain cached previews for already-shared links.
 
+The repository also includes two small `need` demos. `just not-found` builds a
+single glyph generator's SVG and bitmap outputs as one artifact group. `just
+social` builds the 22 English social cards independently with up to eight
+parallel jobs, so a missing card is rebuilt alone while shared inputs invalidate
+the whole set. Use `need --explain TARGET` to inspect a freshness decision.
+The Node scripts own how files are generated; `needfile` owns dependencies and
+freshness; `justfile` owns the developer-facing workflow.
+
 The screensaver and the Discord redirect are still served
 directly. Their styles, fonts, and scripts remain under `assets/`, alongside
 shared images and public downloads.

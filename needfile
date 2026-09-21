@@ -1,0 +1,21 @@
+not_found_deps =
+  scripts/build-not-found-glyph.mjs
+  src/data/wordmark-bitmap.ts
+
+public/brand/not-found-wordmark.svg src/data/not-found-bitmap.ts: {{not_found_deps}}
+  node scripts/build-not-found-glyph.mjs
+
+social_deps =
+  scripts/build-og-image.mjs
+  scripts/lib/social-labels.mjs
+  scripts/lib/social-copy.mjs
+  scripts/fonts/social/manifest.json
+  tree(scripts/fonts/social)
+  src/styles.css
+  src/data/wordmark-bitmap.ts
+  src/lib/site-themes.ts
+  src/i18n/locales.json
+  tree(src/i18n/messages)
+
+public/brand/social/%.png: {{social_deps}}
+  node scripts/build-og-image.mjs --theme {{stem}} --locale en
