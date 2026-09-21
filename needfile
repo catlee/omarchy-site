@@ -1,21 +1,2 @@
 public/brand/not-found-wordmark.svg src/data/not-found-bitmap.ts: scripts/build-not-found-glyph.mjs src/data/wordmark-bitmap.ts
   node scripts/build-not-found-glyph.mjs
-
-social_deps =
-  scripts/build-og-image.mjs
-  scripts/lib/social-labels.mjs
-  scripts/lib/social-copy.mjs
-  scripts/fonts/social/manifest.json
-  scripts/fonts/social/fonts.conf
-  scripts/fonts/social/jetbrains.ttf
-  scripts/fonts/social/latin.ttf
-  src/styles.css
-  src/data/wordmark-bitmap.ts
-  src/lib/site-themes.ts
-  src/i18n/locales.json
-
-# The static Catppuccin card anchors the group; the manifest records the rest.
-public/brand/social/catppuccin.png: {{social_deps}}
-  @outputs(.need/social-cards.outputs)
-  node scripts/build-og-image.mjs --locale en
-  find public/brand/social -maxdepth 1 -type f -name '*.png' ! -name catppuccin.png -printf '%p\n' | sort > .need/social-cards.outputs

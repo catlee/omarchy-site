@@ -1,4 +1,4 @@
-/** Build 1200x630 social cards for every site theme from its CSS palettes. */
+/** Build a 1200x630 social card for every site theme from its CSS palette. */
 import sharp from 'sharp'
 import locales from '../src/i18n/locales.json' with { type: 'json' }
 import { socialLabelMasks, colorSocialLabels } from './lib/social-labels.mjs'
@@ -12,24 +12,13 @@ const outputDir = path.join(root, 'public/brand/social')
 fs.mkdirSync(outputDir, { recursive: true })
 const css = fs.readFileSync(path.join(root, 'src/styles.css'), 'utf8')
 
-const argument = (name) => {
-  const index = process.argv.indexOf(name)
-  return index === -1 ? undefined : process.argv[index + 1]
-}
-
-const requestedLocale = argument('--locale')
-const language = requestedLocale || process.env.PUBLIC_SITE_LOCALE || 'en'
-if (!locales[language])
-  throw new Error(`Unknown social-card locale: ${language}`)
-
-const labelLocale = requestedLocale
-  ? (locales[language].contentLocale ?? language)
-  : undefined
-
 const W = 1200
 const H = 630
+const language = process.env.PUBLIC_SITE_LOCALE || 'en'
 const labelMasks = await socialLabelMasks(
-  labelLocale ? [labelLocale] : undefined,
+  process.argv.includes('--site')
+    ? [locales[language].contentLocale ?? language]
+    : undefined,
 )
 
 // The wordmark's own grid: 81 cells across, 19 down, each cell 51 wide by
@@ -148,8 +137,9 @@ ${cells.join('')}
 ${wordmark.join('')}
 </svg>`
 
-  for (const [locale, masks] of Object.entries(labelMasks)) {
-    const directory = locale === 'en' ? outputDir : path.join(outputDir, locale)
+  for (const [language, masks] of Object.entries(labelMasks)) {
+    const directory =
+      language === 'en' ? outputDir : path.join(outputDir, language)
     fs.mkdirSync(directory, { recursive: true })
     const out = path.join(directory, `${theme.id}.png`)
     const overlays = await colorSocialLabels(masks, [

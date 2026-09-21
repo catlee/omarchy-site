@@ -3,7 +3,7 @@ import locales from '../../src/i18n/locales.json' with { type: 'json' }
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import fonts from '../fonts/social/manifest.json' with { type: 'json' }
-import { socialCopy } from './social-copy.mjs'
+import { socialCopies } from './social-copy.mjs'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
 const fontDir = path.join(root, 'scripts/fonts/social')
@@ -12,7 +12,7 @@ process.env.FONTCONFIG_FILE = path.join(fontDir, 'fonts.conf')
 const escape = (text) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-export function validateSocialCharacters(code, copy = socialCopy(code)) {
+export function validateSocialCharacters(code, copy = socialCopies[code]) {
   const font = fonts.fonts[fonts.locales[locales[code]?.contentLocale ?? code]]
   if (!font || !copy) throw new Error(`Prepare social-card fonts for ${code}`)
   const supported = new Set(font.characters + fonts.fonts.Latin.characters)
@@ -29,16 +29,8 @@ export function validateSocialCharacters(code, copy = socialCopy(code)) {
 }
 
 /** Shape once per language, then reuse the alpha masks in every palette. */
-export async function socialLabelMasks(codes = Object.keys(locales)) {
-  const copies = Object.fromEntries(
-    codes.map((code) => [code, socialCopy(code)]),
-  )
-  const fontNames = new Set([
-    'Latin',
-    ...codes.map((code) => fonts.locales[locales[code]?.contentLocale ?? code]),
-  ])
-  for (const name of fontNames) {
-    const font = fonts.fonts[name]
+export async function socialLabelMasks(codes = Object.keys(socialCopies)) {
+  for (const font of Object.values(fonts.fonts)) {
     await sharp({
       text: {
         text: escape(font.characters.trim()[0]),
@@ -52,7 +44,7 @@ export async function socialLabelMasks(codes = Object.keys(locales)) {
   }
   const masks = {}
   for (const code of codes) {
-    const copy = copies[code]
+    const copy = socialCopies[code]
     validateSocialCharacters(code, copy)
     const font =
       fonts.fonts[fonts.locales[locales[code]?.contentLocale ?? code]]

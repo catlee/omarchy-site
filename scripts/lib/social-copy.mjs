@@ -34,6 +34,6 @@ export function socialCopy(code) {
   return { lines, direction: locale.direction ?? 'ltr' }
 }
 
-export function socialCopies(codes = Object.keys(locales)) {
-  return Object.fromEntries(codes.map((code) => [code, socialCopy(code)]))
-}
+export const socialCopies = Object.fromEntries(
+  Object.keys(locales).map((code) => [code, socialCopy(code)]),
+)

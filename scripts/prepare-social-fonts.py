@@ -12,7 +12,7 @@ OUT = ROOT / 'scripts/fonts/social'
 OUT.mkdir(parents=True, exist_ok=True)
 COPIES = json.loads(subprocess.check_output([
     'node', '--input-type=module', '-e',
-    "import { socialCopies } from './scripts/lib/social-copy.mjs'; console.log(JSON.stringify(socialCopies()))",
+    "import { socialCopies } from './scripts/lib/social-copy.mjs'; console.log(JSON.stringify(socialCopies))",
 ], cwd=ROOT))
 GROUPS = {
     'en': ('JetBrains', 'JetBrainsMono', None),
