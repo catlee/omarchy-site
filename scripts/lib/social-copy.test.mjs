@@ -7,15 +7,16 @@ import { socialCopies, socialCopy } from './social-copy.mjs'
 import { validateSocialCharacters } from './social-labels.mjs'
 
 test('every language has complete, renderable social-card text', () => {
-  assert.deepEqual(Object.keys(socialCopies), Object.keys(locales))
-  for (const [code, copy] of Object.entries(socialCopies)) {
+  const copies = socialCopies()
+  assert.deepEqual(Object.keys(copies), Object.keys(locales))
+  for (const [code, copy] of Object.entries(copies)) {
     assert.equal(copy.lines.length, 3)
     assert.ok(copy.lines.every((line) => line.trim()))
     assert.ok(!copy.lines[0].includes('Omarchy'))
     validateSocialCharacters(code)
   }
-  assert.equal(socialCopies.ar.direction, 'rtl')
-  assert.equal(socialCopies.ur.direction, 'rtl')
+  assert.equal(copies.ar.direction, 'rtl')
+  assert.equal(copies.ur.direction, 'rtl')
   assert.throws(() => socialCopy('missing'), /Unknown social-card language/)
   assert.throws(
     () => validateSocialCharacters('da', { lines: ['🦄'] }),

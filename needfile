@@ -10,12 +10,13 @@ social_deps =
   scripts/lib/social-labels.mjs
   scripts/lib/social-copy.mjs
   scripts/fonts/social/manifest.json
-  tree(scripts/fonts/social)
+  scripts/fonts/social/fonts.conf
+  scripts/fonts/social/jetbrains.ttf
+  scripts/fonts/social/latin.ttf
   src/styles.css
   src/data/wordmark-bitmap.ts
   src/lib/site-themes.ts
   src/i18n/locales.json
-  tree(src/i18n/messages)
 
 public/brand/social/%.png: {{social_deps}}
   node scripts/build-og-image.mjs --theme {{stem}} --locale en
